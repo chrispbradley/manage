@@ -366,7 +366,7 @@ set(BUILD_CONFIG_COMMAND ${CMAKE_COMMAND} --build . --target install --config $<
 set(name manage_config)
 get_configuration_subdir_suffix(cfgdir)
 
-set(stamp_dir "${CONFIG_PATH}${cfgdir}/stamp")
+set(stamp_dir "${CONFIG_PATH}/stamp${cfgdir}")
 set(create_config_stamp_file "${stamp_dir}/${name}-create")
 set(build_config_stamp_file "${stamp_dir}/${name}-build")
 set(done_stamp_file "${stamp_dir}/${name}-done")
@@ -395,7 +395,7 @@ add_custom_command(APPEND
 
 add_custom_command(OUTPUT ${mkdir_stamp_file}
     COMMENT "Creating directories."
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${stamp_dir}${cfgdir}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${stamp_dir}
     COMMAND ${CMAKE_COMMAND} -E touch ${mkdir_stamp_file}
     DEPENDS get_sources
     VERBATIM
@@ -437,7 +437,7 @@ add_custom_command(APPEND
 )
 
 add_custom_target(build_config
-    DEPENDS ${build_config_stamp_files}
+    DEPENDS ${build_config_stamp_file}
 )
 #add_dependencies(build_config create_config)
 
