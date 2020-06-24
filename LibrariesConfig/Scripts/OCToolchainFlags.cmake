@@ -95,6 +95,7 @@ if (CMAKE_COMPILER_IS_GNUC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU" OR MINGW)
         # Newer versions
         if (Fortran IN_LIST OC_ACTIVE_LANGUAGES)
             addFlag("-fcheck=all" Fortran DEBUG)
+	    addFlag("-ffpe-trap=invalid,zero,overflow" Fortran DEBUG)
         endif ()
     endif ()
     
