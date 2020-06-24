@@ -19,6 +19,17 @@
 #     If you want to initialize your OpenCMISS installation to developer defaults, define the EVEL variable to any value.
 #     It's not a typo, the command line for this results in -DEVEL=<myvalue> :-)
 #
+# =========== Instrumentation ===========
+# 
+# INSTRUMENTATION: []|none|scorep|vtune
+#    Specify any code instrumentation systems for use in performance analysis.
+#
+#    none  : no instrumentation
+#    scorep: score-p instrumentation
+#    vtune : Intel vtune instrumentation (only available with Intel compilers)
+#    Note that this variable will be used case-insensitive.
+#    If no instrumentation is specified none will be used as the default.
+#
 # ============== Toolchain ==============
 # 
 # OPENCMISS_TOOLCHAIN: []|gnu|clang|mingw|intel|ibm
@@ -103,6 +114,8 @@ set(OPENCMISS_TOOLCHAIN ${OPENCMISS_TOOLCHAIN} CACHE INTERNAL "Internalise the t
 
 # Need to set the compilers before any project call
 include(OCToolchainCompilers)
+# Set any instrumentation options before any project call
+include(OCInstrumentation)
 setCMakeCompilersForToolchain(${OPENCMISS_TOOLCHAIN})
 ########################################################################
 # Ready to start the "build project"
@@ -121,22 +134,24 @@ list(APPEND CMAKE_MODULE_PATH
 )
 
 # Pre-check for Python and Swig availability so that bindings will be built automatically (unless explicitly specified)
-find_package(PythonInterp ${PYTHON_VERSION} QUIET)
-find_package(PythonLibs QUIET)
+if (EXISTS "${OPENCMISS_PYTHON_EXECUTABLE}")
+    set(Python_EXECUTABLE ${OPENCMISS_PYTHON_EXECUTABLE})
+endif ()
+find_package(Python COMPONENTS Interpreter Development)
 find_package(SWIG QUIET)
 
 if (SWIG_FOUND)
-	message(STATUS "Language bindings are possible.")
-	if (PYTHONLIBS_FOUND)
-		message(STATUS "Python language bindings are possible.")
-	else ()
-		message(STATUS "Python library development files not found.  No Python language bindings will be created.")
-	endif ()
+    message(STATUS "Language bindings are possible.")
+    if(Python_Development_FOUND)
+       message(STATUS "Python language bindings are possible.")
+    else ()
+        message(STATUS "Python library development files not found.  No Python language bindings will be created.")
+    endif ()
 else ()
 	message(STATUS "SWIG not found. It is not possible to create any language bindings.")
 endif ()
 
-if (PYTHONINTERP_FOUND AND PYTHONLIBS_FOUND AND SWIG_FOUND)
+if (Python_Interpreter_FOUND AND Python_Development_FOUND AND SWIG_FOUND)
     set(OC_PYTHON_PREREQ_FOUND YES)
     # Already check for the virtualenv - this is the default way if found.
     find_program(VIRTUALENV_EXECUTABLE virtualenv)
