@@ -216,7 +216,7 @@ if (OPENCMISS_DEPENDENCIES_ONLY)
     )
 else ()
     ###########################################################################################
-    # Create opencmisslibs-config.cmake
+    # Create opencmisslibs-config.cmake etc.
 
     relativize_path_list(OPENCMISS_MODULE_PATH_EXPORT "${_INSTALL_BASE_PATH}" _OPENCMISS_IMPORT_PREFIX)
     if (OC_DEVELOPER AND NOT OPENCMISS_INSTALLATION_SUPPORT_EMAIL)
@@ -228,6 +228,9 @@ else ()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Templates/opencmisslibs-config.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/export/opencmisslibs-config.cmake @ONLY
     )
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Templates/opencmisslibs-preconfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/export/opencmisslibs-preconfig.cmake @ONLY
+    )
 
     # Version file
     include(CMakePackageConfigHelpers)
@@ -237,6 +240,7 @@ else ()
     )
     install(
         FILES ${CMAKE_CURRENT_BINARY_DIR}/export/opencmisslibs-config.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/export/opencmisslibs-preconfig.cmake
             ${CMAKE_CURRENT_BINARY_DIR}/export/opencmisslibs-config-version.cmake
         DESTINATION "."
         COMPONENT Development
